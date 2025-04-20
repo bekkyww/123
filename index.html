@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Игра с Колесом Фортуны</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      padding: 30px;
+    }
+
+    #pointer {
+	  width: 0;
+	  height: 0;
+	  border-left: 20px solid transparent;
+	  border-right: 20px solid transparent;
+	  border-top: 30px solid red;
+	  margin: 0 auto;
+	  margin-bottom: 10px;
+	}
+
+
+    #wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+
+    #wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid #333;
+      position: relative;
+      overflow: hidden;
+      transition: transform 4s ease-out;
+    }
+
+    .name {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0% 0%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+      padding-left: 10px;
+    }
+
+    #chosen-name {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    #task-box {
+      margin-top: 30px;
+      font-size: 20px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 10px;
+      display: inline-block;
+      min-width: 300px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #219ebc;
+      color: white;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #126782;
+    }
+
+    .main {
+  background-color: #d0f0ff; /* светло-голубой фон */
+  padding: 30px;
+  text-align: center;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* расстояние между картинками */
+}
+
+.circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #219ebc;
+  transition: transform 0.3s ease;
+}
+
+.circle:hover {
+  transform: scale(1.5);
+}
+
+}
+  </style>
+</head>
+<body>
+
+  <h1>Игра с Колесом Фортуны</h1>
+  <div id="wheel-container">
+    <div id="wheel"></div>
+  </div>
+
+  <button onclick="spin()">Крутить колесо</button>
+  <div id="chosen-name"></div>
+
+  <button onclick="showTask()">Показать задание</button>
+  <div id="task-box">Задание появится здесь</div>
+  <br><br>
+
+  	<div class="main">
+	  	<div class="gallery">
+	  		<h1>Players:</h1><br>
+			<a href="https://www.instagram.com/bek3lt4n/">
+			    <img src="Photos/Beka.jpg" alt="Beksultan" class="circle">
+			</a>
+			<a href="https://www.instagram.com/aidana.shingiskhan/">
+			    <img src="Photos/Aidana.jpg" alt="Aidana" class="circle">
+			</a>
+			<a href="https://www.instagram.com/shalish__/">
+			    <img src="Photos/Alish.jpg" alt="Alish" class="circle">
+			</a>
+			<a href="https://www.instagram.com/nanata.a.a/">
+			    <img src="Photos/Danara.jpg" alt="Danara" class="circle">
+			</a>
+			<a href="https://www.instagram.com/alihanimanmadirov/">
+			    <img src="Photos/Alikhan.jpg" alt="Alikhan" class="circle">
+			</a>
+		</div>
+	</div>
+  <script>
+    const names = ["Айдана", "Бексултан", "Данара", "Алихан", "Алиш"];
+    const tasks = [
+      "Попроси прохожего спеть его любимую песню",
+      "Переозвучить отрезок из мултика и закинуть в сторис",
+      "Повторить рандомную сторис с ленты",
+      "Закинуть в сторис фотку с стиле эмо",
+      "Сказать 2 постыдные истории, одна правда, другая ложь",
+      "Алихан делает тебе эдит",
+      "Попросить прохожего на языке жестов объяснить как добраться до аэропорта",
+      "Убедить прохожего что вы знакомы",
+      "Показать пальцем на прохожего и громко сказать ЭТО ОН??!!",
+      "Уговорить прохожего сделать одно из этих заданий",
+      "Попробывать купить что-то в магазине за листочки",
+      "Написать одногрупнику которого мы выберем В понедельник у нас с тобой будет серьезный разговор.",
+      "Повторить какой нибудь мем",
+      "Надо станцевать в наушниках под музыку, остальные пытаются угадать, что за трек.",
+      "До следующего раза когда ты мнова выпадешь тебе нужно после каждого смеха кукарекнуть",
+      
+    ];
+
+    const wheel = document.getElementById("wheel");
+    let currentRotation = 0;
+
+    function renderWheel() {
+      wheel.innerHTML = "";
+      const anglePerName = 360 / names.length;
+
+      names.forEach((name, i) => {
+        const segment = document.createElement("div");
+        segment.className = "name";
+        segment.style.transform = `rotate(${i * anglePerName}deg) translate(-100%)`;
+        segment.style.backgroundColor = i % 2 === 0 ? "#8ecae6" : "#219ebc";
+        segment.innerText = name;
+        wheel.appendChild(segment);
+      });
+    }
+
+    function spin() {
+      const randomIndex = Math.floor(Math.random() * names.length);
+      const anglePerName = 360 / names.length;
+      const targetAngle = randomIndex * anglePerName + anglePerName / 2;
+      const spins = 5;
+      const totalRotation = spins * 360 + targetAngle;
+
+      currentRotation += totalRotation;
+      wheel.style.transform = `rotate(-${currentRotation}deg)`;
+
+      setTimeout(() => {
+        document.getElementById("chosen-name").innerText = `Выполняет: ${names[randomIndex]}`;
+      }, 4200);
+    }
+
+    function showTask() {
+      const randomTask = tasks[Math.floor(Math.random() * tasks.length)];
+      document.getElementById("task-box").innerText = randomTask;
+    }
+
+    renderWheel();
+  </script>
+
+</body>
+</html>
